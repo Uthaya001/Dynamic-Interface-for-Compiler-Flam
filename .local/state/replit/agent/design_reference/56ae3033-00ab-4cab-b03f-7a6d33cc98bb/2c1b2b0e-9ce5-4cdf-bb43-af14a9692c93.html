@@ -1,0 +1,787 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Interface Compiler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'Consolas', 'monospace']
+                    },
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#64748B',
+                        accent: '#10B981',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        error: '#EF4444'
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-slate-50 font-sans">
+    <!-- @COMPONENT: AppHeader -->
+    <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-code text-white text-sm"></i>
+                </div>
+                <h1 class="text-xl font-semibold text-slate-800">Dynamic Interface Compiler</h1>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button data-event="click:saveSchema" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
+                <i class="fas fa-save mr-2"></i>Save Schema
+            </button>
+            <button data-event="click:loadSchema" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors font-medium text-sm">
+                <i class="fas fa-folder-open mr-2"></i>Load
+            </button>
+            <button data-event="click:exportSchema" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors font-medium text-sm">
+                <i class="fas fa-download mr-2"></i>Export
+            </button>
+            <div class="w-px h-6 bg-slate-200"></div>
+            <button data-event="click:toggleSettings" class="p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: AppHeader -->
+
+    <div class="flex h-screen pt-16">
+        <!-- @COMPONENT: Sidebar [component library and templates] -->
+        <div class="w-80 bg-white border-r border-slate-200 flex flex-col">
+            <div class="p-4 border-b border-slate-100">
+                <h2 class="font-semibold text-slate-800 mb-3">Component Library</h2>
+                <div class="grid grid-cols-3 gap-2">
+                    <div data-event="click:addFormBlock" class="p-3 border-2 border-dashed border-slate-200 rounded-lg hover:border-primary hover:bg-blue-50 cursor-pointer transition-colors text-center">
+                        <i class="fas fa-wpforms text-primary text-lg mb-1 block"></i>
+                        <span class="text-xs font-medium text-slate-600">Form</span>
+                    </div>
+                    <div data-event="click:addTextBlock" class="p-3 border-2 border-dashed border-slate-200 rounded-lg hover:border-primary hover:bg-blue-50 cursor-pointer transition-colors text-center">
+                        <i class="fas fa-align-left text-primary text-lg mb-1 block"></i>
+                        <span class="text-xs font-medium text-slate-600">Text</span>
+                    </div>
+                    <div data-event="click:addImageBlock" class="p-3 border-2 border-dashed border-slate-200 rounded-lg hover:border-primary hover:bg-blue-50 cursor-pointer transition-colors text-center">
+                        <i class="fas fa-image text-primary text-lg mb-1 block"></i>
+                        <span class="text-xs font-medium text-slate-600">Image</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex-1 p-4 overflow-y-auto">
+                <h3 class="font-medium text-slate-700 mb-3">Schema Templates</h3>
+                <div class="space-y-2">
+                    <!-- @MAP: templates.map(template => ( -->
+                    <div data-event="click:loadTemplate" data-template="contact-form" class="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors border border-slate-200">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-file-code text-slate-500 text-sm"></i>
+                            <span class="text-sm font-medium text-slate-700">Contact Form</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Basic contact form with validation</p>
+                    </div>
+                    
+                    <div data-event="click:loadTemplate" data-template="landing-page" class="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors border border-slate-200">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-file-code text-slate-500 text-sm"></i>
+                            <span class="text-sm font-medium text-slate-700">Landing Page</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Hero section with CTA form</p>
+                    </div>
+                    
+                    <div data-event="click:loadTemplate" data-template="registration" class="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors border border-slate-200">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-file-code text-slate-500 text-sm"></i>
+                            <span class="text-sm font-medium text-slate-700">User Registration</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Multi-field form with custom logic</p>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="font-medium text-slate-700 mb-3">Recent Schemas</h3>
+                    <div class="space-y-2" data-bind="recentSchemas">
+                        <div class="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors border border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-slate-700">Product Survey</span>
+                                <span class="text-xs text-slate-500">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors border border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-slate-700">Newsletter Signup</span>
+                                <span class="text-xs text-slate-500">1 day ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: MainEditor [split pane with JSON editor and preview] -->
+        <div class="flex-1 flex">
+            <!-- JSON Schema Editor -->
+            <div class="flex-1 flex flex-col bg-white border-r border-slate-200">
+                <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <h3 class="font-semibold text-slate-700">Schema Editor</h3>
+                        <div class="flex items-center space-x-1 bg-white rounded px-2 py-1 border border-slate-200">
+                            <span class="w-2 h-2 bg-success rounded-full" data-bind="isValidSchema"></span>
+                            <span class="text-xs text-slate-600" data-bind="validationStatus">Valid JSON</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button data-event="click:formatJSON" class="px-3 py-1 text-xs bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors">
+                            <i class="fas fa-code mr-1"></i>Format
+                        </button>
+                        <button data-event="click:validateSchema" class="px-3 py-1 text-xs bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors">
+                            <i class="fas fa-check-circle mr-1"></i>Validate
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Monaco Editor Container -->
+                <div class="flex-1 relative">
+                    <!-- @FUNCTIONALITY: Monaco editor should be mounted here with JSON schema validation -->
+                    <div class="absolute inset-0 font-mono text-sm">
+                        <div class="h-full bg-gray-900 text-gray-100 p-4 overflow-auto">
+                            <div class="text-gray-500 text-xs mb-2">// Define your UI components using JSON schema</div>
+                            <pre class="text-sm leading-relaxed" data-mock="true"><code>{
+  "components": [
+    {
+      "type": "text",
+      "id": "hero-title",
+      "props": {
+        "variant": "h1",
+        "content": "Welcome to Dynamic Interface Builder",
+        "className": "text-4xl font-bold text-gray-900 mb-4"
+      }
+    },
+    {
+      "type": "text", 
+      "id": "hero-subtitle",
+      "props": {
+        "variant": "p",
+        "content": "Build beautiful interfaces with JSON schemas and live preview.",
+        "className": "text-lg text-gray-600 mb-8"
+      }
+    },
+    {
+      "type": "form",
+      "id": "contact-form",
+      "props": {
+        "title": "Get Started",
+        "fields": [
+          {
+            "label": "Full Name",
+            "name": "fullName",
+            "type": "text",
+            "required": true,
+            "placeholder": "Enter your full name"
+          },
+          {
+            "label": "Email Address",
+            "name": "email", 
+            "type": "email",
+            "required": true,
+            "placeholder": "your@email.com",
+            "validation": {
+              "pattern": "^[^@]+@[^@]+\\.[^@]+$",
+              "message": "Please enter a valid email address"
+            }
+          },
+          {
+            "label": "Age",
+            "name": "age",
+            "type": "number",
+            "required": true,
+            "min": 18,
+            "max": 100,
+            "placeholder": "Enter your age"
+          },
+          {
+            "label": "Message",
+            "name": "message",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Tell us about your project..."
+          }
+        ],
+        "submitText": "Send Message",
+        "onSubmit": "if (values.age < 21) { return { error: 'Must be 21 or older' }; } console.log('Form submitted:', values); return { success: 'Message sent successfully!' };"
+      }
+    },
+    {
+      "type": "image",
+      "id": "hero-image", 
+      "props": {
+        "src": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        "alt": "Team collaborating on a project with laptops and documents",
+        "className": "rounded-xl shadow-lg w-full h-auto mt-8"
+      }
+    }
+  ]
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Panel -->
+                <div data-bind="hasErrors" class="border-t border-red-200 bg-red-50 p-3" style="display: none;">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-exclamation-triangle text-error text-sm mt-0.5"></i>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-red-800">JSON Syntax Error</p>
+                            <p class="text-xs text-red-600 mt-1" data-bind="errorMessage">Unexpected token '}' at line 15</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Preview Panel -->
+            <div class="flex-1 flex flex-col bg-slate-50">
+                <div class="px-4 py-3 bg-white border-b border-slate-200 flex items-center justify-between">
+                    <h3 class="font-semibold text-slate-700">Live Preview</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex bg-slate-100 rounded-lg p-1">
+                            <button data-event="click:setPreviewMode" data-mode="desktop" class="px-3 py-1 text-xs bg-white text-slate-700 rounded shadow-sm font-medium">
+                                <i class="fas fa-desktop mr-1"></i>Desktop
+                            </button>
+                            <button data-event="click:setPreviewMode" data-mode="tablet" class="px-3 py-1 text-xs text-slate-600 rounded hover:bg-white transition-colors">
+                                <i class="fas fa-tablet-alt mr-1"></i>Tablet
+                            </button>
+                            <button data-event="click:setPreviewMode" data-mode="mobile" class="px-3 py-1 text-xs text-slate-600 rounded hover:bg-white transition-colors">
+                                <i class="fas fa-mobile-alt mr-1"></i>Mobile
+                            </button>
+                        </div>
+                        <button data-event="click:refreshPreview" class="p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded transition-colors">
+                            <i class="fas fa-sync-alt text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview Container -->
+                <div class="flex-1 overflow-auto p-6">
+                    <!-- @FUNCTIONALITY: Dynamic components should be rendered here based on JSON schema -->
+                    <div class="max-w-4xl mx-auto">
+                        
+                        <!-- @COMPONENT: DynamicTextComponent [rendered from schema] -->
+                        <div data-component-type="text" data-component-id="hero-title">
+                            <h1 class="text-4xl font-bold text-gray-900 mb-4" data-mock="true">Welcome to Dynamic Interface Builder</h1>
+                        </div>
+                        
+                        <div data-component-type="text" data-component-id="hero-subtitle">
+                            <p class="text-lg text-gray-600 mb-8" data-mock="true">Build beautiful interfaces with JSON schemas and live preview.</p>
+                        </div>
+                        <!-- @END_COMPONENT: DynamicTextComponent -->
+
+                        <!-- @COMPONENT: DynamicFormComponent [rendered from schema] -->
+                        <div data-component-type="form" data-component-id="contact-form" class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                            <h2 class="text-2xl font-semibold text-gray-900 mb-6" data-mock="true">Get Started</h2>
+                            
+                            <form data-event="submit:handleDynamicSubmit" class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                                    <input 
+                                        type="text" 
+                                        name="fullName"
+                                        required
+                                        placeholder="Enter your full name"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                        data-validation="required"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                    <input 
+                                        type="email" 
+                                        name="email"
+                                        required
+                                        placeholder="your@email.com"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                        data-validation="email"
+                                    />
+                                    <div class="text-sm text-red-600 mt-1 hidden" data-error-field="email">Please enter a valid email address</div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Age *</label>
+                                    <input 
+                                        type="number" 
+                                        name="age"
+                                        required
+                                        min="18"
+                                        max="100"
+                                        placeholder="Enter your age"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                        data-validation="number,min:18,max:100"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                                    <textarea 
+                                        name="message"
+                                        rows="4"
+                                        placeholder="Tell us about your project..."
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"
+                                    ></textarea>
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    class="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                    data-mock="true"
+                                >
+                                    Send Message
+                                </button>
+                            </form>
+
+                            <!-- Success/Error Messages -->
+                            <div class="mt-4 p-4 bg-success bg-opacity-10 border border-success border-opacity-20 rounded-lg hidden" data-success-message>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    <span class="text-success font-medium" data-bind="successText">Message sent successfully!</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 p-4 bg-error bg-opacity-10 border border-error border-opacity-20 rounded-lg hidden" data-error-message>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-exclamation-circle text-error"></i>
+                                    <span class="text-error font-medium" data-bind="errorText">Must be 21 or older</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_COMPONENT: DynamicFormComponent -->
+
+                        <!-- @COMPONENT: DynamicImageComponent [rendered from schema] -->
+                        <div data-component-type="image" data-component-id="hero-image">
+                            <!-- Team collaborating on a project with laptops and documents -->
+                            <img 
+                                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
+                                alt="Team collaborating on a project with laptops and documents" 
+                                class="rounded-xl shadow-lg w-full h-auto mt-8"
+                                data-mock-image="true"
+                            />
+                        </div>
+                        <!-- @END_COMPONENT: DynamicImageComponent -->
+
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="flex items-center justify-center h-64 hidden" data-loading-state>
+                        <div class="flex items-center space-x-3 text-slate-500">
+                            <div class="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                            <span>Compiling components...</span>
+                        </div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="flex flex-col items-center justify-center h-64 hidden" data-error-state>
+                        <div class="text-center">
+                            <i class="fas fa-exclamation-triangle text-4xl text-error mb-4"></i>
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">Component Render Error</h3>
+                            <p class="text-slate-600 mb-4">There was an error rendering your components. Check your schema syntax.</p>
+                            <button data-event="click:retryRender" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: MainEditor -->
+    </div>
+
+    <!-- @COMPONENT: SettingsModal [overlay for app configuration] -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" data-modal="settings">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b border-slate-200">
+                <h2 class="text-xl font-semibold text-slate-800">Settings</h2>
+                <button data-event="click:closeModal" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Editor Settings -->
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-4">Editor Preferences</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-slate-700">Theme</label>
+                            <select class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option>Dark</option>
+                                <option>Light</option>
+                                <option>Auto</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-slate-700">Font Size</label>
+                            <select class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option>12px</option>
+                                <option selected>14px</option>
+                                <option>16px</option>
+                                <option>18px</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-slate-700">Auto-save</label>
+                            <input type="checkbox" checked class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary">
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-slate-700">Live Preview</label>
+                            <input type="checkbox" checked class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Settings -->
+                <div class="border-t border-slate-200 pt-6">
+                    <h3 class="font-semibold text-slate-800 mb-4">Validation & Security</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-slate-700">Strict Schema Validation</label>
+                            <input type="checkbox" checked class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary">
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-slate-700">Sandbox Code Execution</label>
+                            <input type="checkbox" checked class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary">
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-slate-700">Show Validation Warnings</label>
+                            <input type="checkbox" checked class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Settings -->
+                <div class="border-t border-slate-200 pt-6">
+                    <h3 class="font-semibold text-slate-800 mb-4">Storage</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="text-sm font-medium text-slate-700">Local Storage Usage</label>
+                                <p class="text-xs text-slate-500">2.3 MB of 10 MB used</p>
+                            </div>
+                            <button class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors">
+                                Clear Cache
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 p-6 border-t border-slate-200">
+                <button data-event="click:closeModal" class="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors">Cancel</button>
+                <button data-event="click:saveSettings" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: SettingsModal -->
+
+    <!-- @COMPONENT: ExportModal [overlay for exporting schemas] -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" data-modal="export">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between p-6 border-b border-slate-200">
+                <h2 class="text-xl font-semibold text-slate-800">Export Schema</h2>
+                <button data-event="click:closeModal" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Export Format</label>
+                        <select class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option>JSON Schema</option>
+                            <option>React Component</option>
+                            <option>Vue Component</option>
+                            <option>Angular Component</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">File Name</label>
+                        <input 
+                            type="text" 
+                            value="my-interface-schema.json"
+                            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary">
+                            <span class="text-sm text-slate-700">Include validation logic</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" checked class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary">
+                            <span class="text-sm text-slate-700">Minify output</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 p-6 border-t border-slate-200">
+                <button data-event="click:closeModal" class="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors">Cancel</button>
+                <button data-event="click:downloadExport" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-download mr-2"></i>Download
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ExportModal -->
+
+    <!-- Console/Debug Panel (Collapsible) -->
+    <div class="fixed bottom-0 left-80 right-0 bg-slate-900 text-gray-100 border-t border-slate-700 hidden" data-console-panel style="height: 200px;">
+        <div class="flex items-center justify-between px-4 py-2 border-b border-slate-700 bg-slate-800">
+            <div class="flex items-center space-x-4">
+                <h3 class="text-sm font-semibold">Console Output</h3>
+                <div class="flex space-x-2">
+                    <button data-event="click:clearConsole" class="text-xs px-2 py-1 bg-slate-700 text-slate-300 rounded hover:bg-slate-600 transition-colors">Clear</button>
+                </div>
+            </div>
+            <button data-event="click:toggleConsole" class="text-slate-400 hover:text-slate-200 transition-colors">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        
+        <div class="p-4 h-full overflow-y-auto font-mono text-sm">
+            <!-- @STATE: consoleOutput:array = [] -->
+            <div data-bind="consoleOutput" class="space-y-1">
+                <div class="text-blue-400">[INFO] Schema validation passed</div>
+                <div class="text-green-400">[SUCCESS] Form submitted: {"fullName": "John Doe", "email": "john@example.com", "age": 25}</div>
+                <div class="text-yellow-400">[WARN] Image component using external URL</div>
+                <div class="text-red-400">[ERROR] Custom validation failed: Must be 21 or older</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TODO: Implement dynamic component rendering system
+        // TODO: Implement Monaco editor integration for JSON schema editing
+        // TODO: Implement sandboxed function execution for custom logic
+        // TODO: Implement form validation and submission handling
+        // TODO: Implement local storage for schema persistence
+        // TODO: Implement drag-and-drop component arrangement
+        // TODO: Implement real-time schema validation
+
+        (function() {
+            'use strict';
+            
+            // Application state management
+            const AppState = {
+                currentSchema: null,
+                isValidSchema: true,
+                previewMode: 'desktop',
+                isConsoleVisible: false,
+                recentSchemas: [],
+                settings: {
+                    theme: 'dark',
+                    fontSize: '14px',
+                    autoSave: true,
+                    livePreview: true
+                }
+            };
+
+            // Schema templates for quick start
+            const SchemaTemplates = {
+                'contact-form': {
+                    components: [
+                        {
+                            type: 'form',
+                            id: 'contact-form',
+                            props: {
+                                title: 'Contact Us',
+                                fields: [
+                                    { label: 'Name', name: 'name', type: 'text', required: true },
+                                    { label: 'Email', name: 'email', type: 'email', required: true },
+                                    { label: 'Message', name: 'message', type: 'textarea', required: true }
+                                ],
+                                submitText: 'Send Message'
+                            }
+                        }
+                    ]
+                },
+                'landing-page': {
+                    components: [
+                        {
+                            type: 'text',
+                            id: 'hero-title',
+                            props: {
+                                variant: 'h1',
+                                content: 'Build Amazing Interfaces',
+                                className: 'text-5xl font-bold text-center mb-6'
+                            }
+                        },
+                        {
+                            type: 'image',
+                            id: 'hero-image',
+                            props: {
+                                src: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600',
+                                alt: 'Modern office space with creative professionals working',
+                                className: 'rounded-xl shadow-lg mb-8'
+                            }
+                        }
+                    ]
+                }
+            };
+
+            // Initialize application
+            function initializeApp() {
+                console.log('[INFO] Dynamic Interface Compiler initialized');
+                loadRecentSchemas();
+                setupEventListeners();
+            }
+
+            function loadRecentSchemas() {
+                const saved = localStorage.getItem('recent-schemas');
+                if (saved) {
+                    AppState.recentSchemas = JSON.parse(saved);
+                }
+            }
+
+            function setupEventListeners() {
+                // Component library interactions
+                document.addEventListener('click', handleGlobalClick);
+                document.addEventListener('change', handleInputChange);
+                
+                // Auto-save functionality
+                if (AppState.settings.autoSave) {
+                    setInterval(autoSaveSchema, 30000); // Every 30 seconds
+                }
+            }
+
+            function handleGlobalClick(event) {
+                const target = event.target.closest('[data-event]');
+                if (!target) return;
+
+                const eventData = target.dataset.event;
+                const [eventType, handlerName] = eventData.split(':');
+                
+                if (eventType === 'click') {
+                    handleClickEvent(handlerName, target);
+                }
+            }
+
+            function handleClickEvent(handlerName, element) {
+                switch (handlerName) {
+                    case 'addFormBlock':
+                        addComponentToSchema('form');
+                        break;
+                    case 'addTextBlock':
+                        addComponentToSchema('text');
+                        break;
+                    case 'addImageBlock':
+                        addComponentToSchema('image');
+                        break;
+                    case 'loadTemplate':
+                        loadSchemaTemplate(element.dataset.template);
+                        break;
+                    case 'saveSchema':
+                        saveCurrentSchema();
+                        break;
+                    case 'exportSchema':
+                        showExportModal();
+                        break;
+                    case 'toggleSettings':
+                        toggleModal('settings');
+                        break;
+                    case 'validateSchema':
+                        validateCurrentSchema();
+                        break;
+                    case 'formatJSON':
+                        formatJSONInEditor();
+                        break;
+                    case 'refreshPreview':
+                        refreshPreview();
+                        break;
+                    case 'setPreviewMode':
+                        setPreviewMode(element.dataset.mode);
+                        break;
+                    default:
+                        console.log(`[INFO] Handler ${handlerName} called`);
+                }
+            }
+
+            function addComponentToSchema(componentType) {
+                console.log(`[INFO] Adding ${componentType} component to schema`);
+                // Component addition logic would go here
+            }
+
+            function loadSchemaTemplate(templateName) {
+                if (SchemaTemplates[templateName]) {
+                    console.log(`[INFO] Loading template: ${templateName}`);
+                    AppState.currentSchema = SchemaTemplates[templateName];
+                    // Update editor and preview
+                }
+            }
+
+            function saveCurrentSchema() {
+                console.log('[SUCCESS] Schema saved to local storage');
+                // Save logic would go here
+            }
+
+            function validateCurrentSchema() {
+                // Schema validation logic
+                AppState.isValidSchema = true;
+                console.log('[INFO] Schema validation passed');
+            }
+
+            function toggleModal(modalName) {
+                const modal = document.querySelector(`[data-modal="${modalName}"]`);
+                if (modal) {
+                    modal.classList.toggle('hidden');
+                }
+            }
+
+            function setPreviewMode(mode) {
+                AppState.previewMode = mode;
+                console.log(`[INFO] Preview mode set to: ${mode}`);
+                // Update preview container styling based on mode
+            }
+
+            function refreshPreview() {
+                console.log('[INFO] Refreshing component preview');
+                // Re-render components in preview pane
+            }
+
+            function autoSaveSchema() {
+                if (AppState.currentSchema) {
+                    console.log('[INFO] Auto-saving schema');
+                }
+            }
+
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeApp);
+            } else {
+                initializeApp();
+            }
+        })();
+    </script>
+</body>
+</html>
